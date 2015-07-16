@@ -30,6 +30,7 @@ services:
     class: %hearsay_require_js.namespace_mapping.class%
     arguments:
       - %hearsay_require_js.base_url%
+      - %assetic.read_from%
     public: false
 
   hearsay_require_js.configuration_builder:

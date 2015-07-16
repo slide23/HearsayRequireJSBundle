@@ -151,7 +151,7 @@ class ConfigurationBuilder
 
             if ($modulePath) {
                 $modulePath = preg_replace('~\.js$~', '', $modulePath);
-                $location = $this->getBaseUrl() . '/' . $modulePath;
+                $location = preg_replace('~[/\\\\]+~', '/', $this->getBaseUrl() . '/' . $modulePath);
             }
         }
 

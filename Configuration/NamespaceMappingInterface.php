@@ -24,9 +24,10 @@ interface NamespaceMappingInterface
      *
      * @param  string                $namespace The namespace
      * @param  string                $path      The path
+     * @param  string                $path      The base path
      * @throws PathNotFoundException            If the path was not found
      */
-    public function registerNamespace($namespace, $path);
+    public function registerNamespace($namespace, $path, $base_path);
 
     /**
      * Gets the module path, e.g. `namespace/modules.js` corresponding to a

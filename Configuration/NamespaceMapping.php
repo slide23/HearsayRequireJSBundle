@@ -27,6 +27,13 @@ class NamespaceMapping implements NamespaceMappingInterface
     protected $basePath;
 
     /**
+     * The base path in assetic
+     *
+     * @var string
+     */
+    protected $asseticRoot;
+
+    /**
      * An internal namespace map
      *
      * @var array
@@ -34,19 +41,27 @@ class NamespaceMapping implements NamespaceMappingInterface
     protected $namespaces = array();
 
     /**
+     * An internal base path map
+     *
+     * @var array
+     */
+    protected $basePaths = array();
+
+    /**
      * The constructor method
      *
      * @param string $basePath The base path to serve resources
      */
-    public function __construct($basePath)
+    public function __construct($basePath, $asseticRoot)
     {
         $this->basePath = $basePath;
+        $this->asseticRoot = $asseticRoot;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function registerNamespace($namespace, $path)
+    public function registerNamespace($namespace, $path, $base_url)
     {
         if (!$realPath = $this->getRealPath($path)) {
             throw new PathNotFoundException(
@@ -55,6 +70,10 @@ class NamespaceMapping implements NamespaceMappingInterface
         }
 
         $this->namespaces[$namespace] = $realPath;
+
+        if ($base_url) {
+            $this->basePaths[$namespace] = $base_url;
+        }
     }
 
     /**
@@ -66,7 +85,12 @@ class NamespaceMapping implements NamespaceMappingInterface
 
         foreach ($this->namespaces as $namespace => $realPath) {
             if (strpos($filePath, $realPath) === 0) {
-                $modulePath = $this->basePath . '/' . $namespace;
+                if (array_key_exists($namespace, $this->basePaths)) {
+                    $modulePath = $this->basePaths[$namespace];
+                }
+                else {
+                    $modulePath = $this->basePath . '/' . $namespace;
+                }
 
                 if (is_file($filePath)) {
                     $modulePath .= '/' . $this->getBaseName($filePath, $realPath);
@@ -108,6 +132,9 @@ class NamespaceMapping implements NamespaceMappingInterface
      */
     protected function getRealPath($path)
     {
+        if (substr($path, 0, 1) != '/')
+            $path = $this->asseticRoot . '/' . $path;
+
         if (is_file($path . '.js')) {
             $path .= '.js';
         }

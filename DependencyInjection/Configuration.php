@@ -80,6 +80,24 @@ class Configuration implements ConfigurationInterface
                                         })
                                     ->end()
                                 ->end()
+                                ->variableNode('base_url')
+                                    ->validate()
+                                        ->always(function ($v) {
+                                            if (!is_string($v) && !is_array($v)) {
+                                                throw new InvalidTypeException();
+                                            }
+
+                                            $vs = !is_array($v) ? (array) $v : $v;
+                                            $er = preg_grep('~\.js$~', $vs);
+
+                                            if ($er) {
+                                                throw new InvalidPathException();
+                                            }
+
+                                            return $v;
+                                        })
+                                    ->end()
+                                ->end()
                                 ->booleanNode('external')
                                     ->cannotBeEmpty()
                                     ->defaultFalse()
